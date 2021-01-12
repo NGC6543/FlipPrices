@@ -246,7 +246,7 @@ def test():
 def main_offline():
     """
     This function work with offline page
-    which I download manually
+    which I download manually (or using selenium)
     """
     if not os.path.exists(f"{BASE_DIR}data_flip_pages"):
         os.mkdir(f"{BASE_DIR}data_flip_pages")
@@ -255,9 +255,12 @@ def main_offline():
     save_pages()
     difference()
     print("All done")
+    # txt_fname = os.listdir(f"{BASE_DIR}result")[-1]
+    # os.startfile(f"{BASE_DIR}result\\{txt_fname}")
     # test()
 
 
 if __name__ == "__main__":
     # main_online()
     main_offline()
+    # input("ENTER")

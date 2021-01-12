@@ -73,5 +73,5 @@ class FlipBot:
 
 if __name__ == "__main__":
     flip_page = FlipBot(secret.my_mail, secret.passw, make_save=False)
-    # flip_page.run()
-    flip_page.check_webdriver
+    flip_page.run()
+    # flip_page.check_webdriver

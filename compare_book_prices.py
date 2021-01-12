@@ -62,21 +62,26 @@ class CompareBooks:
         """
         sfile_price может быть как int так и str
         """
+        try:
+            min_date, max_date = price_list[2], price_list[3]
+        except Exception as identifier:
+            min_date, max_date = "No Date", "No Date"
         min_v, max_v = price_list[0], price_list[1]
         if isinstance(sfile_price, str):
-            return price_list[0], price_list[1]
+            return price_list[0], price_list[1], None, None
             # return *price_list
         # Check min price
         if isinstance(price_list[0], int) and sfile_price <= price_list[0]:
             # min_v = (sfile_price, file_date)
             min_v = sfile_price
-            # min_date = file_date
+            min_date = file_date
         # Check max price
         if isinstance(price_list[1], int) and sfile_price >= price_list[1]:
             # max_v = (sfile_price, file_date)
             max_v = sfile_price
-            # max_date = file_date
-        return min_v, max_v
+            max_date = file_date
+        return min_v, max_v, min_date, max_date
+        # return min_v, max_v, [f"MIN_Date: {min_date}", f"MAX_Date: {max_date}"]
 
     @staticmethod
     def make_compare(main_file: dict, compare_file: dict, file_date: str):
@@ -95,12 +100,14 @@ class CompareBooks:
             # main_file[keys] = min_v, max_v
             try:
                 main_price_list = main_file[keys]
-                # second_file_price = compare_file.get(keys, "Цена")[0]
+                second_file_price = compare_file.get(keys, "Цена")[0]
                 # Get first element of list (keys type is list and may be str or int)
-                second_file_price = compare_file[keys][0]
-                min_v, max_v= CompareBooks.get_min_max(main_price_list, second_file_price, file_date)
-                main_file[keys] = min_v, max_v
-                # print(main_file[keys])
+                # second_file_price = compare_file[keys][0]
+                min_v, max_v, date1, date2 = CompareBooks.get_min_max(main_price_list, second_file_price, file_date)
+                if date1 is not None:
+                    main_file[keys] = min_v, max_v, date1, date2
+                else:
+                    main_file[keys] = min_v, max_v
             except Exception as e:
                 pr = compare_file[keys][0]
                 main_file[keys] = [pr, pr]
@@ -125,16 +132,23 @@ class CompareBooks:
         # print(main_file)
         return main_file
 
+    def get_current_date():
+        import datetime
+        dt = datetime.datetime.today()
+        current_date = dt.date()
+        return current_date
+
     def save(self, save_pickle=False):
         if not os.path.exists(BASE_DIR + "Compare_books"):
             os.mkdir(BASE_DIR + "Compare_books")
+        date = CompareBooks.get_current_date()
         save_dir = BASE_DIR + "Compare_books\\"
-        with open(f"{save_dir}\\result_file.txt", "w") as f:
+        with open(f"{save_dir}\\result_file_{date}.txt", "w") as f:
             for key, value in self.main_file.items():
                 f.write(f"Название книги: {key}, Минимальные и максимальные цены: {value}")
                 f.write("\n")
         if save_pickle:
-            make_pickle(self.main_file, f"{save_dir}\\main_file.pkl")
+            make_pickle(self.main_file, f"{save_dir}\\main_file_{date}.pkl")
 
 
 def just_test(folder):
