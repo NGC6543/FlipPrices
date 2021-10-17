@@ -3,6 +3,8 @@ import time
 import datetime
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.chrome.options import Options
+# https://stackoverflow.com/questions/16180428/can-selenium-webdriver-open-browser-windows-silently-in-the-background
 # from webdriver_manager.chrome import ChromeDriverManager
 import secret
 import check_webdriver
@@ -56,14 +58,16 @@ class FlipBot:
         # self.driver.find_element_by_xpath("/html/body/div[2]/div[1]/div/div[1]/header/div[5]/div[1]/div[2]/a[1]").click()
         self.driver.find_element_by_xpath("/html/body/div[1]/div[1]/div/div[1]/header/div[5]/div[1]/div[2]/a[1]").click()
         # self.driver.find_element_by_xpath("//a[contains(text(), 'Войти')]")
-        self.driver.find_element_by_xpath("//input[@name=\"email\"]").send_keys(self.username)
-        self.driver.find_element_by_xpath("//input[@name=\"password\"]").send_keys(self.password)
+        # self.driver.find_element_by_xpath("//input[@name=\"email\"]").send_keys(self.username)
+        self.driver.find_element_by_xpath("//*[@id=\"username\"]").send_keys(self.username)
+        # self.driver.find_element_by_xpath("//input[@name=\"password\"]").send_keys(self.password)
+        self.driver.find_element_by_xpath("//*[@id=\"password\"]").send_keys(self.password)
         # self.driver.find_element_by_xpath("/html/body/div[2]/div[1]/div/div[2]/div/div/div/form/table/tbody/tr[5]/td/input")\
         #     .click()
-        self.driver.find_element_by_xpath("/html/body/div[1]/div[1]/div/div[2]/div/div/div/form/table/tbody/tr[5]/td/input").click()
+        self.driver.find_element_by_xpath("/html/body/div[1]/div[1]/div/div[2]/div/div/div/div/div/div[2]/div[1]/div[2]/form/input[1]").click()
         self.driver.find_element_by_xpath('//*[@id="w_cart"]').click()
         self.driver.find_element_by_xpath("//*[@id='content']/div[1]/a").click()
-        time.sleep(2) # Здесь подождать загрузки страницы
+        time.sleep(2)  # Здесь подождать загрузки страницы
         get_curr_date = datetime.datetime.now().date()
         fname_pages = f"Отложенные товары {get_curr_date}.html"
         if self.make_save:

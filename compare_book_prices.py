@@ -39,10 +39,20 @@ TODO:
 новые книги, то эти книги вообще не будут учитываться.
 Нужно сделать так что, если они новые то просто добавлялись
 без сравнений
+
+Короче нужно сделать функцию типа update которой подается
+два значения и она сравнивает старое значение с новым
+и третий аргумент: знак равенства больше или меньше
+и этим поидее можно заменить функцию get_min_max
 """
 
 BASE_DIR = "Python\\Flip_prices\\"
 # BASE_DIR = os.getcwd()
+
+# Может создать dict переменную которую использовать
+# Как переменную где будут храниться данные о 
+# Названии книги и ценах. Можно даже словрь из 
+# collections
 
 
 class CompareBooks:
@@ -55,6 +65,9 @@ class CompareBooks:
     def first_initialization(self):
         f_file = load_pickle(f"{self.pages_path}{self.files_in_dir[0]}")
         for keys in f_file:
+            # # print("FFILE",f_file[keys])
+            # if f_file[keys][0] == "Цена не установлена":
+            #     f_file[keys][0] = 0
             f_file[keys] = [f_file[keys][0], f_file[keys][0]]
         return f_file
 
@@ -62,26 +75,33 @@ class CompareBooks:
         """
         sfile_price может быть как int так и str
         """
+        min_v = price_list[0]
+        max_v = price_list[1]
         try:
             min_date, max_date = price_list[2], price_list[3]
         except Exception as identifier:
-            min_date, max_date = "No Date", "No Date"
-        min_v, max_v = price_list[0], price_list[1]
+            min_date, max_date = file_date, file_date
         if isinstance(sfile_price, str):
-            return price_list[0], price_list[1], None, None
-            # return *price_list
-        # Check min price
-        if isinstance(price_list[0], int) and sfile_price <= price_list[0]:
-            # min_v = (sfile_price, file_date)
+            return price_list[0], price_list[1], min_date, max_date
+        try:
+            if sfile_price <= price_list[0]:
+                min_v = sfile_price
+                min_date = file_date
+            elif sfile_price >= price_list[1]:
+                max_v = sfile_price
+                max_date = file_date
+        except Exception as e:
             min_v = sfile_price
-            min_date = file_date
-        # Check max price
-        if isinstance(price_list[1], int) and sfile_price >= price_list[1]:
-            # max_v = (sfile_price, file_date)
             max_v = sfile_price
-            max_date = file_date
         return min_v, max_v, min_date, max_date
-        # return min_v, max_v, [f"MIN_Date: {min_date}", f"MAX_Date: {max_date}"]
+
+    def update(first_value, second_value, sign: str):
+        """
+        sign must be < or >
+        """
+        if second_value > first_value:
+            # second
+            return second_value
 
     @staticmethod
     def make_compare(main_file: dict, compare_file: dict, file_date: str):
@@ -93,24 +113,19 @@ class CompareBooks:
             # Возможно тут нужен будет try ... except
             # keys может быть не во втором словаре
             # или использовать dict.get(keys, "Цена не уст")[0]
-
-            # main_price_list = main_file[keys]  # Здесь list(min and max value)
-            # second_file_price = compare_file.get(keys, "Цена")[0]
-            # min_v, max_v = CompareBooks.get_min_max(main_price_list, second_file_price, file_date)
-            # main_file[keys] = min_v, max_v
+            # print(keys)
             try:
                 main_price_list = main_file[keys]
-                second_file_price = compare_file.get(keys, "Цена")[0]
-                # Get first element of list (keys type is list and may be str or int)
-                # second_file_price = compare_file[keys][0]
-                min_v, max_v, date1, date2 = CompareBooks.get_min_max(main_price_list, second_file_price, file_date)
-                if date1 is not None:
-                    main_file[keys] = min_v, max_v, date1, date2
-                else:
-                    main_file[keys] = min_v, max_v
             except Exception as e:
-                pr = compare_file[keys][0]
-                main_file[keys] = [pr, pr]
+                # print(e)
+                value_for_new_book = compare_file[keys][0]
+                main_file[keys] = value_for_new_book, value_for_new_book
+                main_price_list = main_file[keys]
+
+            second_file_price = compare_file[keys][0]
+            # Get first element of list (keys type is list and may be str or int)
+            min_v, max_v, date1, date2 = CompareBooks.get_min_max(main_price_list, second_file_price, file_date)
+            main_file[keys] = min_v, max_v, date1, date2
         return main_file
 
     def get_date(fname):
@@ -121,6 +136,7 @@ class CompareBooks:
         main_file = CompareBooks.first_initialization(self)
         print(f"Pages folder: {self.pages_path}")
         for indx in range(1, len(os.listdir(self.pages_path))):
+            # print(f"RUN_{indx}")
             fname = self.files_in_dir[indx]
             compared_file = load_pickle(f"{self.pages_path}\\{fname}")
             file_date = CompareBooks.get_date(fname)
@@ -155,12 +171,14 @@ def just_test(folder):
     ff = BASE_DIR + folder
     for num, item in enumerate(os.listdir(ff)):
         pickle_file = load_pickle(f"{ff}\\{item}")
-        print(num, pickle_file['Жизнь пчел. Разум цветов'])
+        list_pickle = pickle_file['Туманность Андромеды. Час Быка']
+        print(num, list_pickle)
 
 
 if __name__ == "__main__":
     exmp = CompareBooks("data_flip_pages\\")
     # exmp = CompareBooks("for_tests\\")
+    # just_test("for_tests\\")
 
     exmp.run()
     exmp.save(save_pickle=False)
