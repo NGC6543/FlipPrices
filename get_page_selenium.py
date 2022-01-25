@@ -1,3 +1,4 @@
+from lib2to3.pgen2 import driver
 import os
 import time
 import datetime
@@ -41,6 +42,13 @@ class FlipBot:
     def check_webdriver():
         pass
 
+    def download_page(self, num_pages):
+        get_curr_date = datetime.datetime.now().date()
+        fname_pages = f"Отложенные товары {get_curr_date}_{num_pages}.html"
+        with open(f"{BASE_DIR}offline_pages\\{fname_pages}", "wb") as f:
+            f.write((self.driver.page_source).encode())
+        print(f"Downlaod page: {num_pages}")
+
     def run(self):
         if not os.path.exists(f"{BASE_DIR}offline_pages"):
             os.mkdir(f"{BASE_DIR}offline_pages")
@@ -52,30 +60,52 @@ class FlipBot:
             print("Driver was updated")
         finally:
             self.driver = webdriver.Chrome("C:\Program Files (x86)\Google\chromedriver.exe")
-        # self.driver = webdriver.Chrome("C:\Program Files (x86)\Google\chromedriver.exe")
         self.driver.get("https://www.flip.kz/")
         # time.sleep(2)
+
+        # ЗДЕСЬ МЫ РЕГАЕМСЯ
         # self.driver.find_element_by_xpath("/html/body/div[2]/div[1]/div/div[1]/header/div[5]/div[1]/div[2]/a[1]").click()
-        self.driver.find_element_by_xpath("/html/body/div[1]/div[1]/div/div[1]/header/div[5]/div[1]/div[2]/a[1]").click()
+        self.driver.find_element_by_xpath("/html/body/div[1]/div[1]/div/div[1]/header/div[5]/div[1]/div[2]/a[1]").click()  # Войти
         # self.driver.find_element_by_xpath("//a[contains(text(), 'Войти')]")
         # self.driver.find_element_by_xpath("//input[@name=\"email\"]").send_keys(self.username)
-        self.driver.find_element_by_xpath("//*[@id=\"username\"]").send_keys(self.username)
+        self.driver.find_element_by_xpath("//*[@id=\"username\"]").send_keys(self.username)  # Вводим логин
         # self.driver.find_element_by_xpath("//input[@name=\"password\"]").send_keys(self.password)
-        self.driver.find_element_by_xpath("//*[@id=\"password\"]").send_keys(self.password)
+        self.driver.find_element_by_xpath("//*[@id=\"password\"]").send_keys(self.password)  # Вводим пароль
         # self.driver.find_element_by_xpath("/html/body/div[2]/div[1]/div/div[2]/div/div/div/form/table/tbody/tr[5]/td/input")\
         #     .click()
-        self.driver.find_element_by_xpath("/html/body/div[1]/div[1]/div/div[2]/div/div/div/div/div/div[2]/div[1]/div[2]/form/input[1]").click()
-        self.driver.find_element_by_xpath('//*[@id="w_cart"]').click()
-        self.driver.find_element_by_xpath("//*[@id='content']/div[1]/a").click()
-        time.sleep(2)  # Здесь подождать загрузки страницы
-        get_curr_date = datetime.datetime.now().date()
-        fname_pages = f"Отложенные товары {get_curr_date}.html"
+        self.driver.find_element_by_xpath("/html/body/div[1]/div[1]/div/div[2]/div/div/div/div/div/div[2]/div[1]/div[2]/form/input[1]").click()  # Кликаем на войти
+        # ЗДЕСЬ МЫ УЖЕ ВОШЛИ В АККАУНТ
+
+        # Старая версия. Когда был список Отложенные товары
+        # self.driver.find_element_by_xpath('//*[@id="w_cart"]').click()
+        # self.driver.find_element_by_xpath("//*[@id='content']/div[1]/a").click()
+        # time.sleep(2)  # Здесь подождать загрузки страницы
+
+        # Заходим в Мой раздел
+        self.driver.find_element_by_xpath("/html/body/div[1]/div[1]/div/div[1]/header/div[5]/div[1]/div[2]/a[2]/span").click()
+        # Заходим в избранные
+        self.driver.find_element_by_xpath("//*[@id=\"content_left\"]/div[1]/ul/li[3]/a").click()
+        self.driver.implicitly_wait(5)
+        num_pages = 1
+        self.download_page(num_pages)
         if self.make_save:
-            with open(f"{BASE_DIR}offline_pages\\{fname_pages}", "wb") as f:
-                f.write((self.driver.page_source).encode())
+            try:
+                self.driver.find_element_by_xpath(f"//*[@id=\"pagination\"]/li[2]/a").click()
+                self.driver.implicitly_wait(5)
+                self.download_page(num_pages+1)
+                num_pages += 4
+                while True:
+                    # Может ли selenium читать данные со страницы?
+                    # Чтобы предотвратить лишние скачивания (знаки > и >>)
+                    self.driver.find_element_by_xpath(f"//*[@id=\"pagination\"]/li[{num_pages}]/a").click()
+                    self.driver.implicitly_wait(5)
+                    self.download_page(num_pages)
+                    num_pages += 1
+            except Exception as e:
+                print("All pages downloaded")
 
 
 if __name__ == "__main__":
-    flip_page = FlipBot(secret.my_mail, secret.passw, make_save=False)
+    flip_page = FlipBot(secret.my_mail, secret.passw, make_save=True)
     flip_page.run()
     # flip_page.check_webdriver

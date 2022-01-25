@@ -133,7 +133,7 @@ def clear_data_flip_folder(path_folder: str):
     "Delete all files in folder"
     # DIR = f"{BASE_DIR}{del_folder}\\"
     for item in os.listdir(path_folder):
-        os.remove(DIR + item)
+        os.remove(BASE_DIR + item)
 
 
 def move_file(from_path: str, to_path="archive_pages"):
@@ -160,13 +160,22 @@ def save_pages():
     # clear_data_flip_folder(f"{BASE_DIR}data_flip_pages")
     # if not os.path.exists(f"{BASE_DIR}offline_pages"):
     #     os.mkdir(f"{BASE_DIR}offline_pages")
-    for item in os.listdir(f"{BASE_DIR}offline_pages"):
+    # for item in os.listdir(f"{BASE_DIR}offline_pages"):
+    #     offline_page_html = f"{BASE_DIR}offline_pages\\{item}"
+    #     books_title_and_price = get_offline_page(offline_page_html)
+    #     date_file = get_date_file(offline_page_html)
+    #     move_file(f"{BASE_DIR}offline_pages\\{item}")
+    #     dbname = set_dbname(date_file)
+    #     make_pickle(books_title_and_price, f"{BASE_DIR}data_flip_pages\\{dbname}")
+
+    list_pages = os.listdir(f"{BASE_DIR}offline_pages")
+    books_title_and_price = get_offline_page(list_pages)
+    for item in list_pages:
         offline_page_html = f"{BASE_DIR}offline_pages\\{item}"
-        books_title_and_price = get_offline_page(offline_page_html)
-        date_file = get_date_file(offline_page_html)
         move_file(f"{BASE_DIR}offline_pages\\{item}")
-        dbname = set_dbname(date_file)
-        make_pickle(books_title_and_price, f"{BASE_DIR}data_flip_pages\\{dbname}")
+    date_file = get_date_file(offline_page_html)
+    dbname = set_dbname(date_file)
+    make_pickle(books_title_and_price, f"{BASE_DIR}data_flip_pages\\{dbname}")
 
 
 def make_dict(data: list):
@@ -217,7 +226,7 @@ def straight_path(f_dict: dict, s_dict: dict, fname1: str, fname2: str):
             try:
                 value_of_second_dict = s_dict[key]
                 if value[0] != value_of_second_dict[0]:
-                    f.write(f"{key}, {value[0]} DIFFER FROM {key}, {value_of_second_dict[0]}\n\n")
+                    f.write(f"{key}, {value[0]} DIFFER FROM (Теперь цена) {key}, {value_of_second_dict[0]}\n\n")
             except Exception as e:
                 pass
         f.write("Price the same")
