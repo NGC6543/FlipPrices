@@ -62,7 +62,6 @@ result_list = []
 
 
 def get_list_all_titles():
-    "Function for online version"
     with open(f"{BASE_DIR}links.txt") as f:
         for i in f:
             title = get_page_title(i.rstrip())  # Function in other file
@@ -179,7 +178,7 @@ def save_pages():
 
 
 def make_dict(data: list):
-    "from tuple to dict (made it for test when a had tuple)"
+    "from tuple to dict (made it for test when I had tuple)"
     main_dict = {}
     for i in data:
         main_dict[i[0]] = [i[1], i[2]]

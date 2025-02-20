@@ -181,7 +181,7 @@ if __name__ == "__main__":
     # just_test("for_tests\\")
 
     exmp.run()
-    exmp.save(save_pickle=True)
+    # exmp.save(save_pickle=True)
 
     # get_date("flip 2020-05-21_35")
-    # just_test("data_flip_pages\\")
+    just_test("data_flip_pages\\")

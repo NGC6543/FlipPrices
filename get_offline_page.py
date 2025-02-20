@@ -14,7 +14,7 @@ def return_normal_prices(string):
         price_book = "Цена не установлена"
         return price_book
     r = re.compile(r"\d+")
-    find_int = r.findall(string)
+    find_int = r.findall(str(string))
     price_book = int("".join(find_int))
     return price_book
 
@@ -43,7 +43,7 @@ def get_page(filename):
     Новая версия: поиск тех же данных в меню Избранное
     """
     soup = BeautifulSoup(open(f"{filename}", "rb"), "lxml")
-    html_row = soup.find("body").find_all("div", "value", class_="p-10")
+    html_row = soup.find("body").find_all("div", "value", class_="good-grid") # ones it was product
     # print(html_row)
     for i in html_row:
         find_img_tag = i.find("img")
@@ -67,6 +67,7 @@ def get_offline_page(filename: list):
 
 if __name__ == "__main__":
     # filename = f"{BASE_DIR}flip_0.html"
-    # filename = f"{BASE_DIR}offline_pages\\Отложенные товары 2022-01-18_1.html"
+    # filename = f"{BASE_DIR}offline_pages\\Отложенные товары 2024-08-30_8.html"
+    # get_page(filename)
     filename = os.listdir(f"{BASE_DIR}offline_pages")
     get_offline_page(filename)
