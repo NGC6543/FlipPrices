@@ -1,62 +1,27 @@
 import os
-import sys
-import re
-import time
 import pickle
-from get_page import get_page_title
-from get_offline_page import get_offline_page
-from get_page_selenium import FlipBot
-import secret
+import re
+
+from dotenv import load_dotenv
+
 import get_exchange_rates
+from get_offline_page import get_offline_page
+from get_page import get_page_title
+# from get_page_selenium import FlipBot
+from get_page_selenium import main
 
-
-"""
-Возможно стоит попробовать использовать объект DataFrame
-В качестве строк использовать название книг
-В качестве столбцов цену и автора
-А далее использовать мультииндексы
-где верхние индексы будут датой
-"""
 
 """
 TODO:
-+++ 1. В функции save_pages добавить удаление всех файлов
-в папке offline_pages. Чтобы эти же файлы повторно не использовались
-+++ 2. Как сделать сравнение данных из файлов в том случае когда их много?
-(Сохраняем в файл инфу о различии книг)
-+++ 3. Может стоит дополнительно еще собирать инфу о книгах?
-Быть может также указывать издательство или ссылки на эти книги?
-+++ 4. Проблема в следующем: если добавяться новые книги в отложенные товары
-то программа перестанет корректно сравнивать (будем сравнение разных книг)
-4.1) Возможно здесь стоит использовать сдвиг (тип если книги разные, то
-сделать пропустить книгу справа и рассмотреть следующую за ней)
-4.2) Или заранее удалить новые добавленные книги
-4.3) Или просто пропускать такие данные
-4.4) Можно в фукнции difference создать переменную temp = 0
-затем использовать в цикле enumerate и если слева есть книга, а справа
-ее нет, то индекс temp оставить тем же, перейти на следующий цикл
-и использовать этот новый индекс для правого списка
-(Пробовал через цикл While, но в этом случае нужно будет делать
-слишком много проверок, поэтому сделал проверку словарей)
-
-5. Онлайн версию можно использовать для мониторинга
-отдельных книг. В списке будут ссылки книг которые
-не входят в список отложенных товаров.
-
-+++ 6. В save_pages() убрать функцию с удалением всех файлов в папке
-result. Возможно сделать в функции straight_path проверку наличия
-файла, и если он есть то не создавать заного этот файл, т.к.
-не поменяются
-(В straight_path добавил проверку на существования пути (os.path.exists))
-
-+++ 7. Может оффлейн страницы переносить в другую папку? Это для того
-чтобы наши данные в data_flip_pages не создавались заново каждый раз
-как я запускую скрипт.
+1.
 """
+
+# load_dotenv()
 
 
 BASE_DIR = "Python\\Flip_prices\\"
-# BASE_DIR = os.getcwd() + "\\"
+# MAIL = os.getenv('MAIL')
+# PASSWORD = os.getenv('PASSWORD')
 list_titles = []
 result_list = []
 
@@ -113,8 +78,8 @@ def get_date_file(filename: str):
 
 def make_pickle(obj, path: str):
     """
-    Save obj in pickle \n
-    obj: object that we want save \n
+    Save obj in pickle
+    obj: object that we want save
     path: path to this object
     """
     dbfile = open(path, "wb")
@@ -130,7 +95,7 @@ def load_pickle(path: str):
 
 
 def clear_data_flip_folder(path_folder: str):
-    "Delete all files in folder"
+    """Delete all files in folder."""
     # DIR = f"{BASE_DIR}{del_folder}\\"
     for item in os.listdir(path_folder):
         os.remove(BASE_DIR + item)
@@ -259,7 +224,8 @@ def main_offline():
     """
     if not os.path.exists(f"{BASE_DIR}data_flip_pages"):
         os.mkdir(f"{BASE_DIR}data_flip_pages")
-    flip_page = FlipBot(secret.my_mail, secret.passw)
+    # flip_page = FlipBot(MAIL, PASSWORD)
+    flip_page = main()
     flip_page.run()
     save_pages()
     difference()
