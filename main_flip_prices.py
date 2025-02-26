@@ -2,6 +2,8 @@ import os
 import pickle
 import re
 
+import requests
+
 import get_exchange_rates
 from get_offline_page import get_offline_page
 from get_page import get_page_title
@@ -63,12 +65,6 @@ def get_date_file(filename: str):
     r_d = re.compile(r"\d+-\d+-\d+")
     return "".join(r_d.findall(filename))
 
-    # Second version: Getting date from file properties
-    # get_stat = os.stat(filename)
-    # get_ctime = get_stat.st_ctime
-    # ymd = time.strptime(time.ctime(get_ctime))
-    # return f"{ymd.tm_year}-{ymd.tm_mon}-{ymd.tm_mday}"
-
 
 def make_pickle(obj, path: str):
     """
@@ -116,25 +112,16 @@ def save_pages():
     This function generate data from offline pages
     Data saves in pickle file in data_flip_pages folder
     """
-    # clear_data_flip_folder(f"{BASE_DIR}data_flip_pages")
-    # if not os.path.exists(f"{BASE_DIR}offline_pages"):
-    #     os.mkdir(f"{BASE_DIR}offline_pages")
-    # for item in os.listdir(f"{BASE_DIR}offline_pages"):
-    #     offline_page_html = f"{BASE_DIR}offline_pages\\{item}"
-    #     books_title_and_price = get_offline_page(offline_page_html)
-    #     date_file = get_date_file(offline_page_html)
-    #     move_file(f"{BASE_DIR}offline_pages\\{item}")
-    #     dbname = set_dbname(date_file)
-    #     make_pickle(books_title_and_price, f"{BASE_DIR}data_flip_pages\\{dbname}")
-
     list_pages = os.listdir(f"{BASE_DIR}\\offline_pages")
     books_title_and_price = get_offline_page(list_pages)
     for item in list_pages:
         offline_page_html = f"{BASE_DIR}\\offline_pages\\{item}"
         move_file(f"{BASE_DIR}\\offline_pages\\{item}")
-    date_file = get_date_file(offline_page_html)
+    date_file = get_date_file(offline_page_html)  # type: ignore
     dbname = set_dbname(date_file)
-    make_pickle(books_title_and_price, f"{BASE_DIR}\\data_flip_pages\\{dbname}")
+    make_pickle(
+        books_title_and_price, f"{BASE_DIR}\\data_flip_pages\\{dbname}"
+    )
 
 
 def make_dict(data: list):
@@ -172,22 +159,27 @@ def straight_path(f_dict: dict, s_dict: dict, fname1: str, fname2: str):
     """
     if os.path.exists(f"{BASE_DIR}\\result\\{fname1} and {fname2}.txt"):
         return None
-    with open(f"{BASE_DIR}\\result\\{fname1} and {fname2}.txt", "a", encoding="UTF-8") as f:
+    with open(
+        f"{BASE_DIR}\\result\\{fname1} and {fname2}.txt", "a", encoding="UTF-8"
+    ) as f:
         f.write(f"Compare prices {fname1} and {fname2}\n\n")
         try:
             rates = get_exchange_rates.main()
             get_last_rates = manipulate_rates(rates)
             f.write(f"Курс валют Вчера: {get_last_rates}\n")
             f.write(f"Курс валют Сегодня: {rates}\n\n")
-        except Exception as e:
+        except requests.exceptions.ConnectionError:
             print("Cant get rates from ifin.kz")
         for key, value in f_dict.items():
-            try:
-                value_of_second_dict = s_dict[key]
-                if value[0] != value_of_second_dict[0]:
-                    f.write(f"{key}, {value[0]} DIFFER FROM (Теперь цена) {key}, {value_of_second_dict[0]}\n\n")
-            except Exception as e:
-                pass
+            # try:
+            value_of_second_dict = s_dict[key]
+            if value[0] != value_of_second_dict[0]:
+                f.write(
+                    f"{key}, {value[0]} DIFFER FROM {key},"
+                    f"{value_of_second_dict[0]} (Теперь цена) \n\n"
+                )
+            # except Exception as e:
+            #     pass
         f.write("Price the same")
 
 
@@ -196,7 +188,7 @@ def difference():
     files_in_dir.sort()
     file1 = files_in_dir[-2]
     file2 = files_in_dir[-1]
-    print("Сравниваемые файлы.", file1, file2)
+    print("Сравниваемые файлы: ", file1, file2)
     first_file = load_pickle(f"{BASE_DIR}\\data_flip_pages\\{file1}")
     second_file = load_pickle(f"{BASE_DIR}\\data_flip_pages\\{file2}")
     straight_path(first_file, second_file, file1, file2)
@@ -211,7 +203,7 @@ def test():
     print(last_file)
     load_last_file = load_pickle(folder + f"\\{last_file}")
     print(load_last_file)
-    # print(load_last_file["Жизнь пчел. Разум цветов"])
+    print(load_last_file["Жизнь пчел. Разум цветов"])
 
 
 def main_offline():
