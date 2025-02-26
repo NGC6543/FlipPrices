@@ -2,13 +2,10 @@ import os
 import pickle
 import re
 
-from dotenv import load_dotenv
-
 import get_exchange_rates
 from get_offline_page import get_offline_page
 from get_page import get_page_title
-# from get_page_selenium import FlipBot
-from get_page_selenium import main
+import get_page_selenium
 
 
 """
@@ -16,19 +13,16 @@ TODO:
 1.
 """
 
-# load_dotenv()
 
-
-BASE_DIR = "Python\\Flip_prices\\"
-# MAIL = os.getenv('MAIL')
-# PASSWORD = os.getenv('PASSWORD')
+BASE_DIR = os.getcwd()
+# BASE_DIR = "Python\\Flip_prices\\"
 list_titles = []
 result_list = []
 
 
 def get_list_all_titles():
     "Function for online version"
-    with open(f"{BASE_DIR}links.txt") as f:
+    with open(f"{BASE_DIR}\\links.txt") as f:
         for i in f:
             title = get_page_title(i.rstrip())  # Function in other file
             list_titles.append(title)
@@ -60,7 +54,7 @@ def main_online():
 # From here comes the offline version
 def set_dbname(date):
     "Create name depending on number of files in folder"
-    number_files = os.listdir(f"{BASE_DIR}data_flip_pages")
+    number_files = os.listdir(f"{BASE_DIR}\\data_flip_pages")
     return f"flip {date}_{str(len(number_files) + 1)}"
 
 
@@ -98,7 +92,7 @@ def clear_data_flip_folder(path_folder: str):
     """Delete all files in folder."""
     # DIR = f"{BASE_DIR}{del_folder}\\"
     for item in os.listdir(path_folder):
-        os.remove(BASE_DIR + item)
+        os.remove(BASE_DIR + "\\" + item)
 
 
 def move_file(from_path: str, to_path="archive_pages"):
@@ -108,11 +102,11 @@ def move_file(from_path: str, to_path="archive_pages"):
     delete file from old folder (from_path)
     Or use shutil.move
     """
-    if not os.path.exists(f"{BASE_DIR}{to_path}"):
-        os.mkdir(f"{BASE_DIR}archive_pages")
+    if not os.path.exists(f"{BASE_DIR}\\{to_path}"):
+        os.mkdir(f"{BASE_DIR}\\archive_pages")
     get_last_name = from_path.split("\\")[-1]
     old_file = open(from_path, "rb").read()
-    with open(f"{BASE_DIR}{to_path}\\{get_last_name}", "wb") as f:
+    with open(f"{BASE_DIR}\\{to_path}\\{get_last_name}", "wb") as f:
         f.write(old_file)
     os.remove(from_path)
 
@@ -133,14 +127,14 @@ def save_pages():
     #     dbname = set_dbname(date_file)
     #     make_pickle(books_title_and_price, f"{BASE_DIR}data_flip_pages\\{dbname}")
 
-    list_pages = os.listdir(f"{BASE_DIR}offline_pages")
+    list_pages = os.listdir(f"{BASE_DIR}\\offline_pages")
     books_title_and_price = get_offline_page(list_pages)
     for item in list_pages:
-        offline_page_html = f"{BASE_DIR}offline_pages\\{item}"
-        move_file(f"{BASE_DIR}offline_pages\\{item}")
+        offline_page_html = f"{BASE_DIR}\\offline_pages\\{item}"
+        move_file(f"{BASE_DIR}\\offline_pages\\{item}")
     date_file = get_date_file(offline_page_html)
     dbname = set_dbname(date_file)
-    make_pickle(books_title_and_price, f"{BASE_DIR}data_flip_pages\\{dbname}")
+    make_pickle(books_title_and_price, f"{BASE_DIR}\\data_flip_pages\\{dbname}")
 
 
 def make_dict(data: list):
@@ -152,13 +146,13 @@ def make_dict(data: list):
 
 
 def manipulate_rates(rates: str):
-    if os.path.exists(f"{BASE_DIR}rates.pkl"):
-        list_rate = load_pickle(f"{BASE_DIR}rates.pkl")
+    if os.path.exists(f"{BASE_DIR}\\rates.pkl"):
+        list_rate = load_pickle(f"{BASE_DIR}\\rates.pkl")
         last_rates = list_rate[-1]
         list_rate.append(rates)
-        make_pickle(list_rate, f"{BASE_DIR}rates.pkl")
+        make_pickle(list_rate, f"{BASE_DIR}\\rates.pkl")
         return "".join(last_rates)
-    make_pickle([rates], f"{BASE_DIR}rates.pkl")
+    make_pickle([rates], f"{BASE_DIR}\\rates.pkl")
 
 
 def straight_path(f_dict: dict, s_dict: dict, fname1: str, fname2: str):
@@ -176,9 +170,9 @@ def straight_path(f_dict: dict, s_dict: dict, fname1: str, fname2: str):
     Структура словаря такая: ключ: значение, у меня это так:
     Название книги (str): [цена (int), ссылка на эту книгу (str)]
     """
-    if os.path.exists(f"{BASE_DIR}result\\{fname1} and {fname2}.txt"):
+    if os.path.exists(f"{BASE_DIR}\\result\\{fname1} and {fname2}.txt"):
         return None
-    with open(f"{BASE_DIR}result\\{fname1} and {fname2}.txt", "a") as f:
+    with open(f"{BASE_DIR}\\result\\{fname1} and {fname2}.txt", "a", encoding="UTF-8") as f:
         f.write(f"Compare prices {fname1} and {fname2}\n\n")
         try:
             rates = get_exchange_rates.main()
@@ -198,19 +192,19 @@ def straight_path(f_dict: dict, s_dict: dict, fname1: str, fname2: str):
 
 
 def difference():
-    files_in_dir = os.listdir(f"{BASE_DIR}data_flip_pages")
+    files_in_dir = os.listdir(f"{BASE_DIR}\\data_flip_pages")
     for indx in range(len(files_in_dir) - 1):
         file1 = files_in_dir[indx]
         file2 = files_in_dir[indx + 1]
-        first_file = load_pickle(f"{BASE_DIR}data_flip_pages\\{file1}")
-        second_file = load_pickle(f"{BASE_DIR}data_flip_pages\\{file2}")
+        first_file = load_pickle(f"{BASE_DIR}\\data_flip_pages\\{file1}")
+        second_file = load_pickle(f"{BASE_DIR}\\data_flip_pages\\{file2}")
         straight_path(first_file, second_file, file1, file2)
 
 
 def test():
     "For various purposes"
     # tt = f"{BASE_DIR}rates.pkl"
-    folder = f"{BASE_DIR}data_flip_pages"
+    folder = f"{BASE_DIR}\\data_flip_pages"
     last_file = os.listdir(folder)[-1]
     load_last_file = load_pickle(folder + f"\\{last_file}")
     # print(load_last_file)
@@ -222,20 +216,13 @@ def main_offline():
     This function work with offline page
     which I download manually (or using selenium)
     """
-    if not os.path.exists(f"{BASE_DIR}data_flip_pages"):
-        os.mkdir(f"{BASE_DIR}data_flip_pages")
-    # flip_page = FlipBot(MAIL, PASSWORD)
-    flip_page = main()
-    flip_page.run()
+    if not os.path.exists(f"{BASE_DIR}\\data_flip_pages"):
+        os.mkdir(f"{BASE_DIR}\\data_flip_pages")
+    get_page_selenium.main()
     save_pages()
     difference()
     print("All done")
-    # txt_fname = os.listdir(f"{BASE_DIR}result")[-1]
-    # os.startfile(f"{BASE_DIR}result\\{txt_fname}")
-    # test()
 
 
 if __name__ == "__main__":
-    # main_online()
     main_offline()
-    # input("ENTER")

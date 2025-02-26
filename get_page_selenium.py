@@ -2,7 +2,6 @@ import datetime
 import logging
 import os
 import sys
-import time
 
 import selenium.common.exceptions as sel_exp
 from selenium import webdriver
@@ -24,6 +23,10 @@ SECONDS_TO_WAIT = 2
 
 
 def download_page(driver, num_pages):
+    """Функция для скачивания веб страниц.
+
+    Скачивает страницы.
+    """
     get_curr_date = datetime.datetime.now().date()
     fname_pages = f"Отложенные товары {get_curr_date}_{num_pages}.html"
     with open(f"{BASE_DIR}offline_pages\\{fname_pages}", "wb") as f:
@@ -71,7 +74,7 @@ def get_page(url):
     # Кликаем на войти.
     driver.find_element(
         By.XPATH, "//*[@id=\"auth-form\"]/div[3]/form[1]/input[2]"
-    ).click()  
+    ).click()
     # ЗДЕСЬ МЫ УЖЕ ВОШЛИ В АККАУНТ.
 
     # Заходим в избранное.
@@ -81,7 +84,9 @@ def get_page(url):
     li_value = 7
     while True:
         try:
-            driver.find_element(By.XPATH, f"//*[@id=\"pagination\"]/li[{li_value}]/a")
+            driver.find_element(
+                By.XPATH, f"//*[@id=\"pagination\"]/li[{li_value}]/a"
+            )
         except sel_exp.NoSuchElementException:
             logging.debug("Или первая или последняя страница.")
             download_page(driver, num_page)
