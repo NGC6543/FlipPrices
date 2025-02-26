@@ -53,7 +53,7 @@ def get_page(filename):
     Новая версия: поиск тех же данных в меню Избранное
     """
     soup = BeautifulSoup(open(f"{filename}", "rb"), "html.parser")
-    html_row = soup.find("body").find_all("div", "class", class_="good-grid")
+    html_row = soup.find("body").find_all("div", "class", class_="new-product")
     if not html_row:
         logging.warning(
             'Bs4 ничего не нашёл. Вероятно, параметры поиска не верные.'

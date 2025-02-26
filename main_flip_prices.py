@@ -193,22 +193,25 @@ def straight_path(f_dict: dict, s_dict: dict, fname1: str, fname2: str):
 
 def difference():
     files_in_dir = os.listdir(f"{BASE_DIR}\\data_flip_pages")
-    for indx in range(len(files_in_dir) - 1):
-        file1 = files_in_dir[indx]
-        file2 = files_in_dir[indx + 1]
-        first_file = load_pickle(f"{BASE_DIR}\\data_flip_pages\\{file1}")
-        second_file = load_pickle(f"{BASE_DIR}\\data_flip_pages\\{file2}")
-        straight_path(first_file, second_file, file1, file2)
+    files_in_dir.sort()
+    file1 = files_in_dir[-2]
+    file2 = files_in_dir[-1]
+    print("Сравниваемые файлы.", file1, file2)
+    first_file = load_pickle(f"{BASE_DIR}\\data_flip_pages\\{file1}")
+    second_file = load_pickle(f"{BASE_DIR}\\data_flip_pages\\{file2}")
+    straight_path(first_file, second_file, file1, file2)
 
 
 def test():
     "For various purposes"
     # tt = f"{BASE_DIR}rates.pkl"
     folder = f"{BASE_DIR}\\data_flip_pages"
-    last_file = os.listdir(folder)[-1]
+    last_file = "flip 2025-02-26_547"
+    # last_file = os.listdir(folder)[-1]
+    print(last_file)
     load_last_file = load_pickle(folder + f"\\{last_file}")
-    # print(load_last_file)
-    print(load_last_file["Жизнь пчел. Разум цветов"])
+    print(load_last_file)
+    # print(load_last_file["Жизнь пчел. Разум цветов"])
 
 
 def main_offline():
@@ -226,3 +229,4 @@ def main_offline():
 
 if __name__ == "__main__":
     main_offline()
+    # test()
