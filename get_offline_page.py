@@ -13,8 +13,6 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 
-
-# BASE_DIR = "Python\\Flip_prices\\"
 BASE_DIR = os.getcwd() + "\\"
 books = {}
 
@@ -27,25 +25,6 @@ def return_normal_prices(price):
     find_int = r.findall(str(price))
     price_book = int("".join(find_int))
     return price_book
-
-
-# def get_page(filename):
-#     """
-#     OLD VERSION: Когда был список Отложенные товары
-#     In result we got "books" list, where can find Title, price and link books
-#     """
-#     soup = BeautifulSoup(open(f"{filename}", "rb"), "lxml")
-#     html_row = soup.find("body").find_all("div", "value", class_="row")
-#     for i in html_row[1:]:
-#         # print(i.b.text) # Тоже получает текст
-#         find_img_tag = i.find("img")
-#         title_book = find_img_tag.get("alt")  # Получение названия книги
-#         find_price_tag = i.find("div", class_="text_att cprice")
-#         price_book = return_normal_prices(find_price_tag.text)  # Получение цены
-#         get_a = i.a
-#         link_book = get_a.get("href")  # Получение ссылки на книгу
-#         # books.append((title_book, price_book, link_book))
-#         books[title_book] = [price_book, link_book]
 
 
 def get_page(filename):

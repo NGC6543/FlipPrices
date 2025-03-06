@@ -33,7 +33,6 @@ def main():
     html = get_html_text(link)
     rates = get_rates(html)
     return_rates = " ".join(rates)
-    # print(f"{current_date}: {return_rates}")
     return f"{current_date}: {return_rates}"
 
 

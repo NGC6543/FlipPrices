@@ -5,10 +5,9 @@ import re
 import requests
 
 import get_exchange_rates
-from get_offline_page import get_offline_page
-from get_page import get_page_title
 import get_page_selenium
-
+from get_offline_page import get_offline_page
+from utils.load_make_pickle import load_pickle, make_pickle
 
 """
 TODO:
@@ -18,42 +17,8 @@ TODO:
 
 BASE_DIR = os.getcwd()
 # BASE_DIR = "Python\\Flip_prices\\"
-list_titles = []
-result_list = []
 
 
-def get_list_all_titles():
-    "Function for online version"
-    with open(f"{BASE_DIR}\\links.txt") as f:
-        for i in f:
-            title = get_page_title(i.rstrip())  # Function in other file
-            list_titles.append(title)
-    # print(list_titles)
-
-
-def separate_list_titles():
-    "Function for online version"
-    r = re.compile(r"\d+")
-    for item in list_titles:
-        split_items = item.split("—")[:-1]
-        digit = r.findall(item)
-        title_book = split_items[0].rstrip()
-        price_book = int("".join(digit))
-        author_book = split_items[2].rstrip()
-        result_list.append((title_book, price_book, author_book))
-
-
-def main_online():
-    """
-    This function run search on online pages
-    pages taken from .txt file (see get_list_all_titles function)
-    """
-    get_list_all_titles()
-    separate_list_titles()
-    print(result_list)
-
-
-# From here comes the offline version
 def set_dbname(date):
     "Create name depending on number of files in folder"
     number_files = os.listdir(f"{BASE_DIR}\\data_flip_pages")
@@ -66,22 +31,22 @@ def get_date_file(filename: str):
     return "".join(r_d.findall(filename))
 
 
-def make_pickle(obj, path: str):
-    """
-    Save obj in pickle
-    obj: object that we want save
-    path: path to this object
-    """
-    dbfile = open(path, "wb")
-    pickle.dump(obj, dbfile)
-    dbfile.close()
+# def make_pickle(obj, path: str):
+#     """
+#     Save obj in pickle
+#     obj: object that we want save
+#     path: path to this object
+#     """
+#     dbfile = open(path, "wb")
+#     pickle.dump(obj, dbfile)
+#     dbfile.close()
 
 
-def load_pickle(path: str):
-    dbfile = open(path, "rb")
-    db = pickle.load(dbfile)
-    dbfile.close()
-    return db
+# def load_pickle(path: str):
+#     dbfile = open(path, "rb")
+#     db = pickle.load(dbfile)
+#     dbfile.close()
+#     return db
 
 
 def clear_data_flip_folder(path_folder: str):
