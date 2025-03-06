@@ -171,15 +171,12 @@ def straight_path(f_dict: dict, s_dict: dict, fname1: str, fname2: str):
         except requests.exceptions.ConnectionError:
             print("Cant get rates from ifin.kz")
         for key, value in f_dict.items():
-            # try:
             value_of_second_dict = s_dict[key]
             if value[0] != value_of_second_dict[0]:
                 f.write(
                     f"{key}, {value[0]} DIFFER FROM {key},"
-                    f"{value_of_second_dict[0]} (Теперь цена) \n\n"
+                    f" {value_of_second_dict[0]} (Теперь цена) \n\n"
                 )
-            # except Exception as e:
-            #     pass
         f.write("Price the same")
 
 
