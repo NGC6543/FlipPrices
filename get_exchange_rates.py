@@ -1,6 +1,6 @@
-import os
-import requests
 import datetime
+
+import requests
 from bs4 import BeautifulSoup
 
 
@@ -9,7 +9,7 @@ current_date = dt.date()
 
 
 def get_html_text(link):
-    r = requests.get(link, verify=False)
+    r = requests.get(link)
     return r.text
 
 
