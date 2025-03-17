@@ -1,6 +1,6 @@
 import os
-import pickle
 import re
+from pathlib import Path
 
 import requests
 
@@ -16,7 +16,9 @@ https://docs.python.org/3/library/pathlib.html#pathlib.Path.resolve
 """
 
 
-BASE_DIR = os.getcwd()
+# BASE_DIR = os.getcwd()
+BASE_DIR = Path(__file__).resolve().parent
+# print(BASE_DIR)
 # BASE_DIR = "Python\\Flip_prices\\"
 
 
@@ -30,24 +32,6 @@ def get_date_file(filename: str):
     "Extract date from filename. Example: Отложенные товары 2020-05-01.html"
     r_d = re.compile(r"\d+-\d+-\d+")
     return "".join(r_d.findall(filename))
-
-
-# def make_pickle(obj, path: str):
-#     """
-#     Save obj in pickle
-#     obj: object that we want save
-#     path: path to this object
-#     """
-#     dbfile = open(path, "wb")
-#     pickle.dump(obj, dbfile)
-#     dbfile.close()
-
-
-# def load_pickle(path: str):
-#     dbfile = open(path, "rb")
-#     db = pickle.load(dbfile)
-#     dbfile.close()
-#     return db
 
 
 def clear_data_flip_folder(path_folder: str):
