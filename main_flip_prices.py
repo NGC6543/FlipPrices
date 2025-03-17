@@ -11,7 +11,8 @@ from utils.load_make_pickle import load_pickle, make_pickle
 
 """
 TODO:
-1.
+1. Вместо путей попробовать использовать Pathlib. В частности:
+https://docs.python.org/3/library/pathlib.html#pathlib.Path.resolve
 """
 
 
