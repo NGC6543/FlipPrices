@@ -16,10 +16,7 @@ https://docs.python.org/3/library/pathlib.html#pathlib.Path.resolve
 """
 
 
-# BASE_DIR = os.getcwd()
 BASE_DIR = Path(__file__).resolve().parent
-# print(BASE_DIR)
-# BASE_DIR = "Python\\Flip_prices\\"
 
 
 def set_dbname(date):
@@ -36,7 +33,6 @@ def get_date_file(filename: str):
 
 def clear_data_flip_folder(path_folder: str):
     """Delete all files in folder."""
-    # DIR = f"{BASE_DIR}{del_folder}\\"
     for item in os.listdir(path_folder):
         os.remove(BASE_DIR + "\\" + item)
 
@@ -107,10 +103,12 @@ def straight_path(f_dict: dict, s_dict: dict, fname1: str, fname2: str):
     Структура словаря такая: ключ: значение, у меня это так:
     Название книги (str): [цена (int), ссылка на эту книгу (str)]
     """
+    if not os.path.exists(f"{BASE_DIR}\\result\\"):
+        os.mkdir(f"{BASE_DIR}\\result\\")
     if os.path.exists(f"{BASE_DIR}\\result\\{fname1} and {fname2}.txt"):
         return None
     with open(
-        f"{BASE_DIR}\\result\\{fname1} and {fname2}.txt", "a", encoding="UTF-8"
+        f"{BASE_DIR}\\result\\{fname1} and {fname2}.txt", "a+", encoding="UTF-8"
     ) as f:
         f.write(f"Compare prices {fname1} and {fname2}\n\n")
         try:
@@ -133,8 +131,12 @@ def straight_path(f_dict: dict, s_dict: dict, fname1: str, fname2: str):
 def difference():
     files_in_dir = os.listdir(f"{BASE_DIR}\\data_flip_pages")
     files_in_dir.sort()
-    file1 = files_in_dir[-2]
-    file2 = files_in_dir[-1]
+    if len(files_in_dir) < 2:
+        file1 = files_in_dir[-1]
+        file2 = files_in_dir[-1]
+    else:
+        file1 = files_in_dir[-2]
+        file2 = files_in_dir[-1]
     print("Сравниваемые файлы: ", file1, file2)
     first_file = load_pickle(f"{BASE_DIR}\\data_flip_pages\\{file1}")
     second_file = load_pickle(f"{BASE_DIR}\\data_flip_pages\\{file2}")

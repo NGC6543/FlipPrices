@@ -2,6 +2,7 @@ import datetime
 import logging
 import os
 import sys
+from pathlib import Path
 
 import selenium.common.exceptions as sel_exp
 from dotenv import load_dotenv
@@ -13,7 +14,7 @@ from selenium.webdriver.firefox.options import Options
 load_dotenv()
 
 
-BASE_DIR = "C:\\Users\\Dimas-PC\\VScode_Projects\\Python\\Flip_prices\\"
+BASE_DIR = Path(__file__).resolve().parent
 MAIL = os.getenv('MAIL')
 PASSWORD = os.getenv('PASSWORD')
 SECONDS_TO_WAIT = 2
@@ -26,7 +27,7 @@ def download_page(driver, num_pages):
     """
     get_curr_date = datetime.datetime.now().date()
     fname_pages = f"Отложенные товары {get_curr_date}_{num_pages}.html"
-    with open(f"{BASE_DIR}offline_pages\\{fname_pages}", "wb") as f:
+    with open(f"{BASE_DIR}\\offline_pages\\{fname_pages}", "wb") as f:
         f.write((driver.page_source).encode())
     print(f"Downloaded page: {num_pages}")
 
