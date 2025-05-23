@@ -53,7 +53,7 @@ def get_page(url):
     driver.get(url)
     # Войти в аккаунт.
     driver.find_element(
-        By.XPATH, "/html/body/div[1]/div[1]/div/header/div[3]/div[1]/a[1]"
+        By.XPATH, "/html/body/div[1]/div[1]/div/div[1]/header/div[3]/div[1]/a[1]"
     ).click()
     try:
         driver.find_element(By.XPATH, "//*[@id=\"username\"]")
